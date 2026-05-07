@@ -253,23 +253,24 @@ public class GameManager : MonoBehaviour
 
     private bool StartButtonClickedDirectly()
     {
-        if (startButton == null || !Input.GetMouseButtonDown(0))
+        if (startButton == null || !PointerInput.TryGetPointerDown(out Vector2 pointerPosition))
         {
             return false;
         }
 
         RectTransform startRect = startButton.GetComponent<RectTransform>();
-        return startRect != null && RectTransformUtility.RectangleContainsScreenPoint(startRect, Input.mousePosition);
+        return startRect != null && RectTransformUtility.RectangleContainsScreenPoint(startRect, pointerPosition);
     }
 
     private bool RestartButtonClickedDirectly()
     {
-        if (restartButton == null || !Input.GetMouseButtonDown(0))
+        if (restartButton == null || !PointerInput.TryGetPointerDown(out Vector2 pointerPosition))
         {
             return false;
         }
 
         RectTransform restartRect = restartButton.GetComponent<RectTransform>();
-        return restartRect != null && RectTransformUtility.RectangleContainsScreenPoint(restartRect, Input.mousePosition);
+        return restartRect != null && RectTransformUtility.RectangleContainsScreenPoint(restartRect, pointerPosition);
     }
+
 }
