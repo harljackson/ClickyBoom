@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class ClickRaycaster : MonoBehaviour
 {
+    [Header("Raycast")]
     [SerializeField] private Camera playerCamera;
     [SerializeField] private LayerMask clickableLayers = ~0;
     [SerializeField] private float rayDistance = 100f;
@@ -16,7 +17,7 @@ public class ClickRaycaster : MonoBehaviour
 
     private void Update()
     {
-        if (!Input.GetMouseButtonDown(0))
+        if (!PointerInput.TryGetPointerDown(out Vector2 pointerPosition))
         {
             return;
         }
@@ -26,34 +27,28 @@ public class ClickRaycaster : MonoBehaviour
             return;
         }
 
-        TryClickTarget();
+        TryClickTarget(pointerPosition);
     }
 
-    private void TryClickTarget()
+    private void TryClickTarget(Vector2 pointerPosition)
     {
         if (playerCamera == null)
         {
             return;
         }
 
-        Ray ray = playerCamera.ScreenPointToRay(Input.mousePosition);
+        Ray ray = playerCamera.ScreenPointToRay(pointerPosition);
 
-        if (!Physics.Raycast(ray, out RaycastHit hit, rayDistance, clickableLayers))
+        if (!Physics.Raycast(ray, out RaycastHit hit, rayDistance, clickableLayers, QueryTriggerInteraction.Collide))
         {
             return;
         }
 
-        if (hit.collider.TryGetComponent(out ClickTarget target))
+        ClickTarget target = hit.collider.GetComponentInParent<ClickTarget>();
+
+        if (target != null)
         {
             target.DestroyTarget();
-            return;
-        }
-
-        ClickTarget parentTarget = hit.collider.GetComponentInParent<ClickTarget>();
-
-        if (parentTarget != null)
-        {
-            parentTarget.DestroyTarget();
         }
     }
 }
